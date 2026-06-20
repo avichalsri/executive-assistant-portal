@@ -9,10 +9,11 @@ result can be **printed / exported as a PDF** with official Government of Bihar 
 
 ## Features
 
+- **Bilingual** — English / हिंदी toggle (names, blocks, labels, and the PDF all switch)
+- Government of Bihar saffron banner with state emblem, District Magistrate photo, and a Saharsa Administration hero image
 - Add / remove executives with Current, Previous, and Home block dropdowns
-- One-click allocation — assigns a block excluding each executive's current/previous/home
-- Keeps allocations unique (one executive per block) when enough blocks exist
-- Print / Export to PDF with header, emblem, date, and totals
+- One-click allocation — assigns a block excluding each executive's current/previous/home, spread evenly across blocks
+- Print / Export to PDF with official header, emblem, date, and totals
 - No login, no database, no build step — pure HTML/CSS/JS
 
 ## Run locally
@@ -48,8 +49,10 @@ Saharsa district, Bihar — replace them with your own district's blocks.
 ## Project structure
 
 ```
-index.html        # single page
+index.html        # single page (saffron banner, hero, form, roster)
 css/style.css      # styling + print/PDF rules
-js/blocks.js       # editable list of blocks
+js/blocks.js       # editable blocks + Hindi labels + pre-loaded roster
+js/i18n.js         # English / Hindi strings and language toggle
 js/app.js          # add/remove, allocation algorithm, print
+assets/            # Bihar emblem, DM photo, Saharsa administration image
 ```

@@ -3,61 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Executive Assistant Allocation Portal | Government of Bihar</title>
+  <title data-i18n="page_title">Executive Assistant Allocation Portal</title>
+  <meta name="description" content="Executive Assistant Allocation Portal — Saharsa District, Government of Bihar." />
+  <link rel="icon" href="assets/bihar-emblem.png" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-  <!-- ===================== HEADER ===================== -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="emblem" id="emblemLeft" aria-hidden="true"></div>
-      <div class="header-text">
-        <p class="header-hindi">बिहार सरकार</p>
-        <h1 class="header-title">Government of Bihar</h1>
-        <p class="header-scheme">प्रधानमंत्री आवास योजना – ग्रामीण</p>
-        <p class="header-sub">Executive Assistant Allocation Portal &middot; District: Saharsa</p>
-      </div>
-      <div class="emblem" id="emblemRight" aria-hidden="true"></div>
-    </div>
-  </header>
+<body data-lang="en">
+  <!-- ===================== SAFFRON LANDING HEADER ===================== -->
+  <section class="landing-header">
+    <div class="landing-header-inner">
+      <a href="index.html" class="banner-brand" aria-label="Home">
+        <img class="landing-header-emblem" src="assets/bihar-emblem.png" alt="Government of Bihar / बिहार सरकार" />
+        <div class="landing-titles">
+          <h1 data-i18n="app_title">Executive Assistant Allocation Portal</h1>
+          <p data-i18n="app_subtitle">Saharsa District, Government of Bihar</p>
+          <p class="scheme-line" data-i18n="scheme">Pradhan Mantri Awaas Yojana – Gramin</p>
+        </div>
+      </a>
 
-  <main class="container">
+      <div class="landing-dm">
+        <div class="landing-dm-photo">
+          <img src="assets/dm-saharsa.jpg" alt="District Magistrate, Saharsa" onerror="this.style.display='none'" />
+        </div>
+        <div class="landing-dm-caption">
+          <strong data-i18n="dm_name">Shri Deepesh Kumar</strong>
+          <span data-i18n="dm_role">District Magistrate, Saharsa</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== UTILITY BAR (LANGUAGE) ===================== -->
+  <div class="util-bar">
+    <div class="util-bar-inner">
+      <div class="util-bar-spacer"></div>
+      <div class="lang-toggle" role="group" aria-label="Language / भाषा">
+        <button type="button" data-lang="en" aria-pressed="true">English</button>
+        <button type="button" data-lang="hi" aria-pressed="false">हिंदी</button>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- ===================== HERO ===================== -->
+    <section class="landing-body" aria-label="Overview">
+      <div class="landing-photo" data-label-key="hero_label" data-label="Saharsa Administration">
+        <img src="assets/saharsa-administration.jpeg" alt="Saharsa Administration" onerror="this.style.display='none'" />
+      </div>
+      <div class="hero-text">
+        <h2 data-i18n="hero_title">Executive Assistant Transfer &amp; Block Allocation</h2>
+        <p data-i18n="hero_lead">Add executive assistants with their current, previous and home block, then allocate each a new block — never one of those three.</p>
+      </div>
+    </section>
+
     <!-- ===================== ADD EXECUTIVE ===================== -->
     <section class="card no-print">
-      <h2 class="card-title">Add Executive</h2>
+      <h2 class="card-title" data-i18n="add_title">Add Executive</h2>
       <form id="addForm" class="add-form" autocomplete="off">
         <div class="field">
-          <label for="execName">Executive Name</label>
-          <input type="text" id="execName" placeholder="e.g. Ramesh Kumar" required />
+          <label for="execName" data-i18n="f_name">Executive Name</label>
+          <input type="text" id="execName" data-i18n-placeholder="f_name_ph" placeholder="e.g. Ramesh Kumar" required />
         </div>
         <div class="field">
-          <label for="currentBlock">Current Block</label>
+          <label for="currentBlock" data-i18n="f_current">Current Block</label>
           <select id="currentBlock" required></select>
         </div>
         <div class="field">
-          <label for="previousBlock">Previous Block</label>
+          <label for="previousBlock" data-i18n="f_previous">Previous Block</label>
           <select id="previousBlock"></select>
         </div>
         <div class="field">
-          <label for="homeBlock">Home Block</label>
+          <label for="homeBlock" data-i18n="f_home">Home Block</label>
           <select id="homeBlock"></select>
         </div>
         <div class="field field-action">
-          <button type="submit" class="btn btn-primary">+ Add</button>
+          <button type="submit" class="btn btn-primary" data-i18n="btn_add">+ Add</button>
         </div>
       </form>
-      <p class="hint">An allocated block will never be the executive's Current, Previous, or Home block.</p>
+      <p class="hint" data-i18n="add_hint">An allocated block will never be the executive's Current, Previous, or Home block.</p>
     </section>
 
     <!-- ===================== ROSTER + RESULTS ===================== -->
     <section class="card" id="rosterCard">
       <div class="card-header">
-        <h2 class="card-title">Executive Roster <span class="count-badge" id="countBadge">0</span></h2>
+        <h2 class="card-title"><span data-i18n="roster_title">Executive Roster</span> <span class="count-badge" id="countBadge">0</span></h2>
         <div class="toolbar no-print">
-          <button type="button" class="btn btn-accent" id="allocateBtn">⚙ Allocate Blocks</button>
-          <button type="button" class="btn btn-ghost" id="printBtn">🖨 Print / Export PDF</button>
-          <button type="button" class="btn btn-ghost" id="loadSeedBtn">↻ Load Saharsa Sheet</button>
-          <button type="button" class="btn btn-ghost btn-danger" id="clearBtn">Clear All</button>
+          <button type="button" class="btn btn-accent" id="allocateBtn" data-i18n="btn_allocate">⚙ Allocate Blocks</button>
+          <button type="button" class="btn btn-ghost" id="printBtn" data-i18n="btn_print">🖨 Print / Export PDF</button>
+          <button type="button" class="btn btn-ghost" id="loadSeedBtn" data-i18n="btn_load">↻ Load Saharsa Sheet</button>
+          <button type="button" class="btn btn-ghost btn-danger" id="clearBtn" data-i18n="btn_clear">Clear All</button>
         </div>
       </div>
 
@@ -68,18 +102,18 @@
         <table class="data-table" id="execTable">
           <thead>
             <tr>
-              <th class="col-num">#</th>
-              <th>Executive Name</th>
-              <th>Current Block</th>
-              <th>Previous Block</th>
-              <th>Home Block</th>
-              <th class="col-alloc">Allocated Block<br /><span class="th-hindi">स्थानान्तरित प्रखंड</span></th>
-              <th class="col-action no-print">Action</th>
+              <th class="col-num" data-i18n="th_num">#</th>
+              <th data-i18n="th_name">Executive Name</th>
+              <th data-i18n="th_current">Current Block</th>
+              <th data-i18n="th_previous">Previous Block</th>
+              <th data-i18n="th_home">Home Block</th>
+              <th class="col-alloc"><span data-i18n="th_alloc">Allocated Block</span><br /><span class="th-sub" data-i18n="th_alloc_hi">स्थानान्तरित प्रखंड</span></th>
+              <th class="col-action no-print" data-i18n="th_action">Action</th>
             </tr>
           </thead>
           <tbody id="execTableBody"></tbody>
         </table>
-        <div class="empty-state" id="emptyState">No executives added yet. Use the form above to add one.</div>
+        <div class="empty-state" id="emptyState" data-i18n="empty_state">No executives added yet. Use the form above to add one.</div>
       </div>
 
       <p class="alloc-note no-print" id="allocNote"></p>
@@ -87,10 +121,14 @@
   </main>
 
   <footer class="site-footer no-print">
-    <p>© Government of Bihar — Executive Assistant Allocation Portal. For administrative use.</p>
+    <div class="footer-inner">
+      <div data-i18n="footer_note">© Government of Bihar — Executive Assistant Allocation Portal.</div>
+      <div class="inline-note">© <span id="footer-year"></span> · Government of Bihar</div>
+    </div>
   </footer>
 
   <script src="js/blocks.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
