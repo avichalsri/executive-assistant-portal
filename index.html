@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Executive Assistant Allocation Portal | Government of Bihar</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="emblem" id="emblemLeft" aria-hidden="true"></div>
+      <div class="header-text">
+        <p class="header-hindi">बिहार सरकार</p>
+        <h1 class="header-title">Government of Bihar</h1>
+        <p class="header-sub">Executive Assistant Allocation Portal</p>
+      </div>
+      <div class="emblem" id="emblemRight" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ===================== ADD EXECUTIVE ===================== -->
+    <section class="card no-print">
+      <h2 class="card-title">Add Executive</h2>
+      <form id="addForm" class="add-form" autocomplete="off">
+        <div class="field">
+          <label for="execName">Executive Name</label>
+          <input type="text" id="execName" placeholder="e.g. Ramesh Kumar" required />
+        </div>
+        <div class="field">
+          <label for="currentBlock">Current Block</label>
+          <select id="currentBlock" required></select>
+        </div>
+        <div class="field">
+          <label for="previousBlock">Previous Block</label>
+          <select id="previousBlock"></select>
+        </div>
+        <div class="field">
+          <label for="homeBlock">Home Block</label>
+          <select id="homeBlock"></select>
+        </div>
+        <div class="field field-action">
+          <button type="submit" class="btn btn-primary">+ Add</button>
+        </div>
+      </form>
+      <p class="hint">An allocated block will never be the executive's Current, Previous, or Home block.</p>
+    </section>
+
+    <!-- ===================== ROSTER + RESULTS ===================== -->
+    <section class="card" id="rosterCard">
+      <div class="card-header">
+        <h2 class="card-title">Executive Roster <span class="count-badge" id="countBadge">0</span></h2>
+        <div class="toolbar no-print">
+          <button type="button" class="btn btn-accent" id="allocateBtn">⚙ Allocate Blocks</button>
+          <button type="button" class="btn btn-ghost" id="printBtn">🖨 Print / Export PDF</button>
+          <button type="button" class="btn btn-ghost btn-danger" id="clearBtn">Clear All</button>
+        </div>
+      </div>
+
+      <!-- Print-only header block -->
+      <div class="print-meta" id="printMeta"></div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="execTable">
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th>Executive Name</th>
+              <th>Current Block</th>
+              <th>Previous Block</th>
+              <th>Home Block</th>
+              <th class="col-alloc">Allocated Block</th>
+              <th class="col-action no-print">Action</th>
+            </tr>
+          </thead>
+          <tbody id="execTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState">No executives added yet. Use the form above to add one.</div>
+      </div>
+
+      <p class="alloc-note no-print" id="allocNote"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer no-print">
+    <p>© Government of Bihar — Executive Assistant Allocation Portal. For administrative use.</p>
+  </footer>
+
+  <script src="js/blocks.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
