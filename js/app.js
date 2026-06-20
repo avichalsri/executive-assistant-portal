@@ -247,7 +247,19 @@
       '<div class="pm-row"><span>' + escapeHtml(t("pm_district")) + "</span>" +
       "<span>" + escapeHtml(t("pm_date")) + ": " + escapeHtml(dateStr) + "</span>" +
       "<span>" + escapeHtml(t("pm_total")) + ": " + executives.length + "</span></div>";
+
+    // Blank the document title so the browser's auto header doesn't print
+    // the portal name; restore it afterwards.
+    var savedTitle = document.title;
+    document.title = " ";
+    var restore = function () {
+      document.title = savedTitle;
+      window.removeEventListener("afterprint", restore);
+    };
+    window.addEventListener("afterprint", restore);
     window.print();
+    // Fallback for browsers that don't fire afterprint.
+    setTimeout(restore, 1000);
   });
 
   /* ----------------------------- Utils ----------------------------- */
