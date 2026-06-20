@@ -57,12 +57,31 @@ body {
   font-weight: 700;
   letter-spacing: 0.5px;
 }
+.header-scheme {
+  margin: 4px 0 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
 .header-sub {
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
   opacity: 0.92;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
+}
+.th-hindi {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+  opacity: 0.85;
+}
+.deputed-note {
+  display: block;
+  font-size: 11px;
+  color: var(--saffron);
+  font-style: italic;
 }
 
 /* ===================== LAYOUT ===================== */
@@ -262,7 +281,7 @@ body {
     print-color-adjust: exact;
   }
   .header-hindi { color: var(--gold); }
-  .header-title, .header-sub { color: var(--green-dark); }
+  .header-title, .header-sub, .header-scheme { color: var(--green-dark); }
   .card {
     border: none;
     box-shadow: none;

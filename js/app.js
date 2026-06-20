@@ -3,7 +3,8 @@
   "use strict";
 
   var BLOCKS = window.BLOCKS || [];
-  var executives = []; // { id, name, current, previous, home, allocated }
+  var OTHER_HOME = window.OTHER_HOME || [];
+  var executives = []; // { id, name, current, previous, home, deputed, allocated }
   var nextId = 1;
 
   /* ----------------------------- DOM refs ----------------------------- */
@@ -25,14 +26,20 @@
   function populateDropdowns() {
     var optsRequired = '<option value="" disabled selected>Select block…</option>';
     var optsOptional = '<option value="">— None —</option>';
+    var optsHome = optsOptional;
     BLOCKS.forEach(function (b) {
       var o = '<option value="' + escapeHtml(b) + '">' + escapeHtml(b) + "</option>";
       optsRequired += o;
       optsOptional += o;
+      optsHome += o;
+    });
+    // Home may be an out-of-district location that is never available for allocation.
+    OTHER_HOME.forEach(function (b) {
+      optsHome += '<option value="' + escapeHtml(b) + '">' + escapeHtml(b) + "</option>";
     });
     currentBlock.innerHTML = optsRequired;
     previousBlock.innerHTML = optsOptional;
-    homeBlock.innerHTML = optsOptional;
+    homeBlock.innerHTML = optsHome;
   }
 
   /* ----------------------------- Add / Remove ----------------------------- */
@@ -50,6 +57,7 @@
       current: currentBlock.value,
       previous: previousBlock.value || "",
       home: homeBlock.value || "",
+      deputed: false,
       allocated: null
     });
     addForm.reset();
@@ -97,7 +105,10 @@
     });
 
     var preferUnique = executives.length <= BLOCKS.length;
-    var used = {}; // block -> true
+    var load = {}; // block -> number of executives assigned so far
+    BLOCKS.forEach(function (b) {
+      load[b] = 0;
+    });
 
     // Order executives by fewest eligible blocks first (most constrained).
     var order = executives.slice().sort(function (a, b) {
@@ -116,23 +127,18 @@
 
     order.forEach(function (x) {
       var candidates = BLOCKS.filter(function (b) {
-        return !forbidden[x.id][b] && (!preferUnique || !used[b]);
+        return !forbidden[x.id][b];
       });
-      if (!candidates.length && !preferUnique) {
-        candidates = BLOCKS.filter(function (b) {
-          return !forbidden[x.id][b];
-        });
-      }
       if (!candidates.length) {
         // No eligible block at all (all blocks are this exec's prev/cur/home).
         unassigned.push(x);
         return;
       }
-      // Pick the block that is least demanded among remaining (balance load),
-      // falling back to a rotating pick to vary results.
-      var choice = pickBalanced(candidates, order, forbidden, used);
+      // Spread executives evenly: pick the eligible block carrying the lightest
+      // load so far; break ties by lowest remaining demand from other execs.
+      var choice = pickBalanced(candidates, order, forbidden, load);
       x.allocated = choice;
-      used[choice] = true;
+      load[choice]++;
     });
 
     render();
@@ -155,18 +161,21 @@
     }
   }
 
-  // Choose a candidate block, preferring the one needed by the fewest other
-  // still-unassigned executives (reduces conflicts), tie-broken deterministically.
-  function pickBalanced(candidates, order, forbidden, used) {
-    var best = candidates[0];
-    var bestScore = Infinity;
+  // Choose a candidate block carrying the lightest load so far (even spread),
+  // breaking ties toward the block needed by the fewest still-unassigned execs.
+  function pickBalanced(candidates, order, forbidden, load) {
+    var best = null;
+    var bestLoad = Infinity;
+    var bestDemand = Infinity;
     candidates.forEach(function (b) {
+      var l = load[b];
       var demand = 0;
       order.forEach(function (x) {
         if (x.allocated == null && !forbidden[x.id][b]) demand++;
       });
-      if (demand < bestScore) {
-        bestScore = demand;
+      if (l < bestLoad || (l === bestLoad && demand < bestDemand)) {
+        bestLoad = l;
+        bestDemand = demand;
         best = b;
       }
     });
@@ -192,7 +201,8 @@
       tr.innerHTML =
         '<td class="col-num">' + (i + 1) + "</td>" +
         "<td>" + escapeHtml(x.name) + "</td>" +
-        "<td>" + escapeHtml(x.current) + "</td>" +
+        "<td>" + escapeHtml(x.current) +
+          (x.deputed ? '<span class="deputed-note">deputed to DRDA</span>' : "") + "</td>" +
         "<td>" + (x.previous ? escapeHtml(x.previous) : "—") + "</td>" +
         "<td>" + (x.home ? escapeHtml(x.home) : "—") + "</td>" +
         '<td class="col-alloc">' +
@@ -228,9 +238,10 @@
       year: "numeric"
     });
     printMeta.innerHTML =
-      '<div class="pm-title">Executive Block Allocation — Official Record</div>' +
-      '<div class="pm-row"><span>Date: ' + dateStr + "</span>" +
-      "<span>Total Executives: " + executives.length + "</span></div>";
+      '<div class="pm-title">प्रधानमंत्री आवास योजना – ग्रामीण अन्तर्गत कार्यरत कार्यपालक सहायकों के स्थानान्तरण से संबंधित विवरण</div>' +
+      '<div class="pm-row"><span>जिला / District: Saharsa</span>' +
+      "<span>दिनांक / Date: " + dateStr + "</span>" +
+      "<span>कुल / Total: " + executives.length + "</span></div>";
     window.print();
   });
 
@@ -262,9 +273,35 @@
       .replace(/"/g, "&quot;");
   }
 
+  /* ----------------------------- Seed ----------------------------- */
+  function loadSeed() {
+    var seed = window.SEED_EXECUTIVES || [];
+    executives = seed.map(function (s) {
+      return {
+        id: nextId++,
+        name: s.name,
+        current: s.current,
+        previous: s.previous || "",
+        home: s.home || "",
+        deputed: !!s.deputed,
+        allocated: null
+      };
+    });
+    render();
+  }
+
+  var loadSeedBtn = document.getElementById("loadSeedBtn");
+  if (loadSeedBtn) {
+    loadSeedBtn.addEventListener("click", function () {
+      if (executives.length && !confirm("Replace the current roster with the Saharsa sheet?")) return;
+      nextId = 1;
+      loadSeed();
+    });
+  }
+
   /* ----------------------------- Init ----------------------------- */
   document.getElementById("emblemLeft").innerHTML = emblemSVG();
   document.getElementById("emblemRight").innerHTML = emblemSVG();
   populateDropdowns();
-  render();
+  loadSeed();
 })();
