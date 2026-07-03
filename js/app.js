@@ -2,10 +2,12 @@
 (function () {
   "use strict";
 
-  var BLOCKS = window.BLOCKS || [];
-  var OTHER_HOME = window.OTHER_HOME || [];
-  var BLOCK_HI = window.BLOCK_HI || {};
-  var executives = []; // { id, name, nameHi, current, previous, home, deputed, allocated }
+  var OFFICES = window.OFFICES || [];
+  var OFFICE = {}; // id -> office
+  OFFICES.forEach(function (o) { OFFICE[o.id] = o; });
+  var ALLOC = OFFICES.filter(function (o) { return o.cap > 0; }); // allocation targets
+
+  var executives = []; // { id, name, nameHi, prev, curr, allocated }
   var nextId = 1;
 
   var I18N = window.I18N;
@@ -17,7 +19,6 @@
   var execNameInput = document.getElementById("execName");
   var currentBlock = document.getElementById("currentBlock");
   var previousBlock = document.getElementById("previousBlock");
-  var homeBlock = document.getElementById("homeBlock");
   var tableBody = document.getElementById("execTableBody");
   var emptyState = document.getElementById("emptyState");
   var countBadge = document.getElementById("countBadge");
@@ -28,35 +29,43 @@
   var printMeta = document.getElementById("printMeta");
 
   /* ----------------------------- Display helpers ----------------------------- */
-  // Block ids are canonical English; show Hindi label when in Hindi mode.
-  function blockLabel(id) {
-    if (!id) return "";
-    return lang() === "hi" && BLOCK_HI[id] ? BLOCK_HI[id] : id;
+  function officeLabel(id) {
+    var o = OFFICE[id];
+    if (!o) return "";
+    return lang() === "hi" ? o.hi : o.en;
   }
   function displayName(x) {
     return lang() === "hi" && x.nameHi ? x.nameHi : x.name;
   }
+  // Deputation / tatkal annotation shown as subtext under a posting.
+  function postingNote(p) {
+    if (!p) return "";
+    var parts = [];
+    if (p.tatkal) parts.push(t("tatkal"));
+    if (p.dep) parts.push(p.dep);
+    return parts.join(" ");
+  }
+  function postingCell(p) {
+    if (!p || !p.office) return t("none_dash");
+    var s = escapeHtml(officeLabel(p.office));
+    var note = postingNote(p);
+    if (note) s += '<span class="deputed-note">' + escapeHtml(note) + "</span>";
+    return s;
+  }
 
   /* ----------------------------- Setup ----------------------------- */
+  function officeOptions(includeNone) {
+    var html = includeNone
+      ? '<option value="">' + escapeHtml(t("opt_none")) + "</option>"
+      : '<option value="" disabled selected>' + escapeHtml(t("opt_select")) + "</option>";
+    OFFICES.forEach(function (o) {
+      html += '<option value="' + o.id + '">' + escapeHtml(officeLabel(o.id)) + "</option>";
+    });
+    return html;
+  }
   function populateDropdowns() {
-    var optSelect = '<option value="" disabled selected>' + escapeHtml(t("opt_select")) + "</option>";
-    var optNone = '<option value="">' + escapeHtml(t("opt_none")) + "</option>";
-    var optsRequired = optSelect;
-    var optsOptional = optNone;
-    var optsHome = optNone;
-    BLOCKS.forEach(function (b) {
-      var o = '<option value="' + escapeHtml(b) + '">' + escapeHtml(blockLabel(b)) + "</option>";
-      optsRequired += o;
-      optsOptional += o;
-      optsHome += o;
-    });
-    // Home may be an out-of-district location that is never available for allocation.
-    OTHER_HOME.forEach(function (b) {
-      optsHome += '<option value="' + escapeHtml(b) + '">' + escapeHtml(blockLabel(b)) + "</option>";
-    });
-    currentBlock.innerHTML = optsRequired;
-    previousBlock.innerHTML = optsOptional;
-    homeBlock.innerHTML = optsHome;
+    previousBlock.innerHTML = officeOptions(true);   // previous optional (newly appointed)
+    currentBlock.innerHTML = officeOptions(false);   // current required
   }
 
   /* ----------------------------- Add / Remove ----------------------------- */
@@ -68,26 +77,26 @@
       alert(t("alert_pick_current"));
       return;
     }
+    if (previousBlock.value && previousBlock.value === currentBlock.value) {
+      alert(t("alert_same_office"));
+      return;
+    }
     executives.push({
       id: nextId++,
       name: name,
       nameHi: "",
-      current: currentBlock.value,
-      previous: previousBlock.value || "",
-      home: homeBlock.value || "",
-      deputed: false,
+      prev: { office: previousBlock.value || "" },
+      curr: { office: currentBlock.value },
       allocated: null
     });
     addForm.reset();
-    populateDropdowns(); // reset selects to placeholders
+    populateDropdowns();
     execNameInput.focus();
     render();
   });
 
   function removeExec(id) {
-    executives = executives.filter(function (x) {
-      return x.id !== id;
-    });
+    executives = executives.filter(function (x) { return x.id !== id; });
     render();
   }
 
@@ -100,96 +109,72 @@
   });
 
   /* ----------------------------- Allocation ----------------------------- */
-  // Each executive is assigned a block that is NOT their current/previous/home.
-  // Executives are spread evenly across blocks (least-loaded first).
+  // Assign each executive an office that is neither their current nor previous
+  // office, respecting per-office capacity. This is a capacitated bipartite
+  // matching: expand each office into `cap` slots and run Kuhn's augmenting-path
+  // algorithm. Maximises placements, so it finds a complete assignment whenever
+  // one exists (34 slots for 34 executives → perfect matching when feasible).
   function allocate() {
-    if (!executives.length) {
-      allocNote.textContent = "";
-      return;
+    if (!executives.length) { allocNote.textContent = ""; return; }
+    executives.forEach(function (x) { x.allocated = null; });
+
+    // Build slots: one entry per unit of capacity.
+    var slotOffice = [];
+    ALLOC.forEach(function (o) {
+      for (var i = 0; i < o.cap; i++) slotOffice.push(o.id);
+    });
+
+    function allowed(x, officeId) {
+      return officeId !== x.curr.office && officeId !== (x.prev && x.prev.office);
     }
-    executives.forEach(function (x) {
-      x.allocated = null;
-    });
-
-    var forbidden = {}; // id -> map of forbidden blocks
-    executives.forEach(function (x) {
-      var f = {};
-      [x.current, x.previous, x.home].forEach(function (b) {
-        if (b) f[b] = true;
-      });
-      forbidden[x.id] = f;
-    });
-
-    var preferUnique = executives.length <= BLOCKS.length;
-    var load = {}; // block -> number of executives assigned so far
-    BLOCKS.forEach(function (b) {
-      load[b] = 0;
-    });
-
-    function eligibleCount(x) {
-      var c = 0;
-      BLOCKS.forEach(function (b) {
-        if (!forbidden[x.id][b]) c++;
-      });
-      return c;
+    function candidateCount(x) {
+      var seen = {}, n = 0;
+      ALLOC.forEach(function (o) { if (allowed(x, o.id)) { seen[o.id] = 1; n += o.cap; } });
+      return n;
     }
 
-    // Most-constrained executive first.
+    // Most-constrained executive first improves success and determinism.
     var order = executives.slice().sort(function (a, b) {
-      return eligibleCount(a) - eligibleCount(b);
+      return candidateCount(a) - candidateCount(b);
     });
 
-    var unassigned = [];
+    var slotExec = new Array(slotOffice.length).fill(null); // slot -> exec id
+    var execById = {};
+    executives.forEach(function (x) { execById[x.id] = x; });
 
-    order.forEach(function (x) {
-      var candidates = BLOCKS.filter(function (b) {
-        return !forbidden[x.id][b];
-      });
-      if (!candidates.length) {
-        unassigned.push(x);
-        return;
+    function tryAssign(execId, visited) {
+      var x = execById[execId];
+      for (var s = 0; s < slotOffice.length; s++) {
+        if (visited[s] || !allowed(x, slotOffice[s])) continue;
+        visited[s] = true;
+        if (slotExec[s] === null || tryAssign(slotExec[s], visited)) {
+          slotExec[s] = execId;
+          return true;
+        }
       }
-      var choice = pickBalanced(candidates, order, forbidden, load);
-      x.allocated = choice;
-      load[choice]++;
+      return false;
+    }
+
+    order.forEach(function (x) { tryAssign(x.id, {}); });
+
+    // Read matching back onto executives.
+    slotExec.forEach(function (execId, s) {
+      if (execId !== null) execById[execId].allocated = slotOffice[s];
     });
 
     render();
 
+    var unassigned = executives.filter(function (x) { return !x.allocated; });
     if (unassigned.length) {
       allocNote.className = "alloc-note no-print warn";
       allocNote.textContent = t("alloc_warn", {
-        names: unassigned
-          .map(function (x) { return displayName(x); })
-          .join(", ")
+        count: unassigned.length,
+        names: unassigned.map(displayName).join(", ")
       });
     } else {
       allocNote.className = "alloc-note no-print ok";
-      allocNote.textContent =
-        t("alloc_ok", { n: executives.length }) +
-        (preferUnique ? t("alloc_unique") : t("alloc_repeat"));
+      allocNote.textContent = t("alloc_ok", { n: executives.length });
     }
-  }
-
-  // Pick the eligible block with the lightest load (even spread); break ties
-  // toward the block needed by the fewest still-unassigned executives.
-  function pickBalanced(candidates, order, forbidden, load) {
-    var best = null;
-    var bestLoad = Infinity;
-    var bestDemand = Infinity;
-    candidates.forEach(function (b) {
-      var l = load[b];
-      var demand = 0;
-      order.forEach(function (x) {
-        if (x.allocated == null && !forbidden[x.id][b]) demand++;
-      });
-      if (l < bestLoad || (l === bestLoad && demand < bestDemand)) {
-        bestLoad = l;
-        bestDemand = demand;
-        best = b;
-      }
-    });
-    return best;
   }
 
   allocateBtn.addEventListener("click", allocate);
@@ -200,20 +185,17 @@
     countBadge.textContent = executives.length;
     emptyState.style.display = executives.length ? "none" : "block";
 
-    var dash = t("none_dash");
     executives.forEach(function (x, i) {
       var tr = document.createElement("tr");
       tr.innerHTML =
         '<td class="col-num">' + (i + 1) + "</td>" +
         "<td>" + escapeHtml(displayName(x)) + "</td>" +
-        "<td>" + escapeHtml(blockLabel(x.current)) +
-          (x.deputed ? '<span class="deputed-note">' + escapeHtml(t("deputed_note")) + "</span>" : "") + "</td>" +
-        "<td>" + (x.previous ? escapeHtml(blockLabel(x.previous)) : dash) + "</td>" +
-        "<td>" + (x.home ? escapeHtml(blockLabel(x.home)) : dash) + "</td>" +
+        "<td>" + postingCell(x.prev) + "</td>" +
+        "<td>" + postingCell(x.curr) + "</td>" +
         '<td class="col-alloc">' +
           (x.allocated
-            ? '<span class="alloc-pill">' + escapeHtml(blockLabel(x.allocated)) + "</span>"
-            : '<span class="alloc-empty">' + dash + "</span>") +
+            ? '<span class="alloc-pill">' + escapeHtml(officeLabel(x.allocated)) + "</span>"
+            : '<span class="alloc-empty">' + t("none_dash") + "</span>") +
         "</td>" +
         '<td class="col-action no-print"><button class="btn-remove" data-id="' +
           x.id + '" title="' + escapeHtml(t("remove_title")) + '">✕</button></td>';
@@ -232,15 +214,10 @@
 
   /* ----------------------------- Print / PDF ----------------------------- */
   printBtn.addEventListener("click", function () {
-    if (!executives.length) {
-      alert(t("alert_print_empty"));
-      return;
-    }
+    if (!executives.length) { alert(t("alert_print_empty")); return; }
     var d = new Date();
     var dateStr = d.toLocaleDateString(lang() === "hi" ? "hi-IN" : "en-IN", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric"
+      day: "2-digit", month: "long", year: "numeric"
     });
     printMeta.innerHTML =
       '<div class="pm-title">' + escapeHtml(t("print_title")) + "</div>" +
@@ -248,8 +225,6 @@
       "<span>" + escapeHtml(t("pm_date")) + ": " + escapeHtml(dateStr) + "</span>" +
       "<span>" + escapeHtml(t("pm_total")) + ": " + executives.length + "</span></div>";
 
-    // Blank the document title so the browser's auto header doesn't print
-    // the portal name; restore it afterwards.
     var savedTitle = document.title;
     document.title = " ";
     var restore = function () {
@@ -258,7 +233,6 @@
     };
     window.addEventListener("afterprint", restore);
     window.print();
-    // Fallback for browsers that don't fire afterprint.
     setTimeout(restore, 1000);
   });
 
@@ -279,10 +253,8 @@
         id: nextId++,
         name: s.name,
         nameHi: s.nameHi || "",
-        current: s.current,
-        previous: s.previous || "",
-        home: s.home || "",
-        deputed: !!s.deputed,
+        prev: s.prev || { office: "" },
+        curr: s.curr || { office: "" },
         allocated: null
       };
     });
@@ -299,17 +271,13 @@
   }
 
   /* ----------------------------- Language ----------------------------- */
-  // Re-render dynamic content (dropdowns, table, notes) when language changes.
   document.addEventListener("langchange", function () {
     populateDropdowns();
     render();
   });
 
   /* ----------------------------- Init ----------------------------- */
-  if (I18N) {
-    I18N.applyStatic(document);
-    I18N.initToggle();
-  }
+  if (I18N) { I18N.applyStatic(document); I18N.initToggle(); }
   var yearEl = document.getElementById("footer-year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
   populateDropdowns();
