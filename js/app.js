@@ -127,16 +127,12 @@
     function allowed(x, officeId) {
       return officeId !== x.curr.office && officeId !== (x.prev && x.prev.office);
     }
-    function candidateCount(x) {
-      var seen = {}, n = 0;
-      ALLOC.forEach(function (o) { if (allowed(x, o.id)) { seen[o.id] = 1; n += o.cap; } });
-      return n;
-    }
 
-    // Most-constrained executive first improves success and determinism.
-    var order = executives.slice().sort(function (a, b) {
-      return candidateCount(a) - candidateCount(b);
-    });
+    // Randomise executive order and slot-visit order so each run yields a
+    // different (still complete) assignment. Kuhn's finds a max matching from
+    // any order, so 34/34 placement is preserved whenever feasible.
+    var order = shuffle(executives.slice());
+    var slotOrder = shuffle(slotOffice.map(function (_, i) { return i; }));
 
     var slotExec = new Array(slotOffice.length).fill(null); // slot -> exec id
     var execById = {};
@@ -144,7 +140,8 @@
 
     function tryAssign(execId, visited) {
       var x = execById[execId];
-      for (var s = 0; s < slotOffice.length; s++) {
+      for (var k = 0; k < slotOrder.length; k++) {
+        var s = slotOrder[k];
         if (visited[s] || !allowed(x, slotOffice[s])) continue;
         visited[s] = true;
         if (slotExec[s] === null || tryAssign(slotExec[s], visited)) {
@@ -237,6 +234,14 @@
   });
 
   /* ----------------------------- Utils ----------------------------- */
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, "&amp;")
