@@ -63,7 +63,31 @@
       confirm_reload: "Replace the current roster with the Saharsa sheet?",
       none_dash: "—",
       alloc_ok: "✓ Allocation complete for {n} executive(s). Each office is filled within its capacity.",
-      alloc_warn: "⚠ Could not place {count} executive(s): {names}. No eligible office slot is free (offices excluded are their current/previous; capacities are full)."
+      alloc_warn: "⚠ Could not place {count} executive(s): {names}. No eligible office slot is free (offices excluded are their current/previous; capacities are full).",
+
+      nav_exec: "Executive Portal",
+      nav_bhumi: "Bhumi Karmchari Portal",
+
+      bk_page_title: "Bhumi Karmchari Allocation Portal",
+      bk_app_title: "Bhumi Karmchari Allocation Portal",
+      bk_hero_title: "Revenue Employee (Bhumi Karmchari) Transfer & Circle Allocation",
+      bk_hero_lead: "Add revenue employees with their current circle, then allocate each a new circle — never their current one — within each circle's capacity.",
+      bk_add_title: "Add Revenue Employee",
+      bk_f_name: "Employee Name",
+      bk_f_current: "Current Circle (Anchal)",
+      bk_th_current: "Current Circle",
+      bk_th_alloc: "Allocated Circle",
+      bk_th_alloc_hi: "नवपदस्थापित अंचल",
+      bk_th_cap: "Capacity",
+      bk_add_hint: "An allocated circle is never the employee's current circle, and each circle is filled only up to its capacity.",
+      bk_roster_title: "Revenue Employee Roster",
+      bk_btn_allocate: "⚙ Allocate Circles",
+      bk_cap_title: "Circle capacities (total {cap})",
+      bk_unplaced_title: "Not placed — capacity full ({n})",
+      bk_alloc_ok: "✓ Allocation complete: all {n} employee(s) placed within capacity.",
+      bk_alloc_partial: "✓ Placed {placed} of {n}. {un} could not be placed — total capacity ({cap}) is less than the roster size.",
+      bk_print_title: "Transfer of Revenue Employees posted in one circle for more than 03 years — District Saharsa",
+      alert_pick_current_bk: "Please select a Current Circle."
     },
     hi: {
       page_title: "कार्यपालक सहायक आवंटन पोर्टल",
@@ -119,7 +143,31 @@
       confirm_reload: "वर्तमान सूची को सहरसा सूची से बदलें?",
       none_dash: "—",
       alloc_ok: "✓ {n} कार्यपालक सहायक(कों) हेतु आवंटन पूर्ण। प्रत्येक कार्यालय अपनी क्षमता तक भरा गया।",
-      alloc_warn: "⚠ {count} कार्यपालक सहायक(कों) को स्थान नहीं मिला: {names}। कोई उपयुक्त रिक्त कार्यालय उपलब्ध नहीं (वर्तमान/पूर्व वर्जित; क्षमता पूर्ण)।"
+      alloc_warn: "⚠ {count} कार्यपालक सहायक(कों) को स्थान नहीं मिला: {names}। कोई उपयुक्त रिक्त कार्यालय उपलब्ध नहीं (वर्तमान/पूर्व वर्जित; क्षमता पूर्ण)।",
+
+      nav_exec: "कार्यपालक सहायक पोर्टल",
+      nav_bhumi: "भूमि कर्मचारी पोर्टल",
+
+      bk_page_title: "भूमि कर्मचारी आवंटन पोर्टल",
+      bk_app_title: "भूमि कर्मचारी आवंटन पोर्टल",
+      bk_hero_title: "राजस्व कर्मचारी (भूमि कर्मचारी) स्थानान्तरण एवं अंचल आवंटन",
+      bk_hero_lead: "राजस्व कर्मचारियों को उनके वर्तमान अंचल के साथ जोड़ें, फिर प्रत्येक को नया अंचल आवंटित करें — जो उनका वर्तमान अंचल नहीं होगा — प्रत्येक अंचल की क्षमता के अनुसार।",
+      bk_add_title: "राजस्व कर्मचारी जोड़ें",
+      bk_f_name: "कर्मचारी का नाम",
+      bk_f_current: "वर्तमान अंचल",
+      bk_th_current: "वर्तमान अंचल",
+      bk_th_alloc: "नवपदस्थापित अंचल",
+      bk_th_alloc_hi: "Allocated Circle",
+      bk_th_cap: "क्षमता",
+      bk_add_hint: "आवंटित अंचल कभी भी कर्मचारी का वर्तमान अंचल नहीं होगा, और प्रत्येक अंचल अपनी क्षमता तक ही भरा जाएगा।",
+      bk_roster_title: "राजस्व कर्मचारी सूची",
+      bk_btn_allocate: "⚙ अंचल आवंटित करें",
+      bk_cap_title: "अंचल क्षमता (कुल {cap})",
+      bk_unplaced_title: "स्थान नहीं मिला — क्षमता पूर्ण ({n})",
+      bk_alloc_ok: "✓ आवंटन पूर्ण: सभी {n} कर्मचारी क्षमता अनुसार आवंटित।",
+      bk_alloc_partial: "✓ {n} में से {placed} आवंटित। {un} को स्थान नहीं मिला — कुल क्षमता ({cap}) सूची से कम है।",
+      bk_print_title: "03 वर्ष से अधिक एक अंचल में पदस्थापित राजस्व कर्मचारियों के स्थानान्तरण से संबंधित विवरण — जिला सहरसा",
+      alert_pick_current_bk: "कृपया वर्तमान अंचल चुनें।"
     }
   };
 
