@@ -87,6 +87,10 @@
       bk_alloc_ok: "✓ Allocation complete: all {n} employee(s) placed within capacity.",
       bk_alloc_partial: "✓ Placed {placed} of {n}. {un} could not be placed — total capacity ({cap}) is less than the roster size.",
       bk_print_title: "Transfer of Revenue Employees posted in one circle for more than 03 years — District Saharsa",
+      bk_th_name: "Employee Name",
+      bk_empty_state: "No employees added yet. Use the form above to add one.",
+      bk_confirm_clear: "Remove all employees from the roster?",
+      bk_alert_print_empty: "Add employees before printing.",
       alert_pick_current_bk: "Please select a Current Circle."
     },
     hi: {
@@ -167,6 +171,10 @@
       bk_alloc_ok: "✓ आवंटन पूर्ण: सभी {n} कर्मचारी क्षमता अनुसार आवंटित।",
       bk_alloc_partial: "✓ {n} में से {placed} आवंटित। {un} को स्थान नहीं मिला — कुल क्षमता ({cap}) सूची से कम है।",
       bk_print_title: "03 वर्ष से अधिक एक अंचल में पदस्थापित राजस्व कर्मचारियों के स्थानान्तरण से संबंधित विवरण — जिला सहरसा",
+      bk_th_name: "कर्मचारी नाम",
+      bk_empty_state: "अभी तक कोई कर्मचारी नहीं जोड़ा गया। ऊपर दिए फॉर्म का उपयोग करें।",
+      bk_confirm_clear: "सूची से सभी कर्मचारियों को हटाएँ?",
+      bk_alert_print_empty: "प्रिंट करने से पहले कर्मचारी जोड़ें।",
       alert_pick_current_bk: "कृपया वर्तमान अंचल चुनें।"
     }
   };

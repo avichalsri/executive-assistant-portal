@@ -84,7 +84,7 @@
 
   clearBtn.addEventListener("click", function () {
     if (!roster.length) return;
-    if (confirm(t("confirm_clear"))) { roster = []; render(); }
+    if (confirm(t("bk_confirm_clear"))) { roster = []; render(); }
   });
 
   /* ----------------------------- Allocation ----------------------------- */
@@ -189,7 +189,7 @@
 
   /* ----------------------------- Print / PDF ----------------------------- */
   printBtn.addEventListener("click", function () {
-    if (!roster.length) { alert(t("alert_print_empty")); return; }
+    if (!roster.length) { alert(t("bk_alert_print_empty")); return; }
     var d = new Date();
     var dateStr = d.toLocaleDateString(lang() === "hi" ? "hi-IN" : "en-IN", {
       day: "2-digit", month: "long", year: "numeric"
