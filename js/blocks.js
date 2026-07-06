@@ -81,7 +81,6 @@ window.SEED_EXECUTIVES = [
   { name: "Ved Prakash Prem",    nameHi: "श्री वेद प्रकाश प्रेम",       prev: { office: "circle-salkhua", tatkal: true },      curr: { office: "subdiv-simri" } },
   { name: "Rohan Raja",          nameHi: "श्री रोहन राजा",            prev: { office: "circle-sonbarsa", tatkal: true },     curr: { office: "subdiv-sadar" } },
   { name: "Santosh Rajak",       nameHi: "श्री संतोष रजक",            prev: { office: "circle-banma", tatkal: true, dep: "प्रतिनियुक्त जिला गोपनीय शाखा, सहरसा" }, curr: { office: "circle-salkhua", tatkal: true, dep: "प्रतिनियुक्त जिला गोपनीय प्रशाखा, सहरसा" } },
-  { name: "Pradeep Kumar",       nameHi: "श्री प्रदीप कुमार",          prev: { office: "lokshikayat-simri" },                 curr: { office: "rtps" } },
   { name: "Kumar Suman Singh",   nameHi: "श्री कुमार सुमन सिंह",       prev: { office: "block-simri" },                       curr: { office: "block-sonbarsa" } },
   { name: "Nisha Kumari",        nameHi: "सुश्री निशा कुमारी",         prev: { office: "lokshikayat-simri" },                 curr: { office: "circle-banma", tatkal: true } },
   { name: "Ajay Kumar",          nameHi: "श्री अजय कुमार",            prev: { office: "" },                                  curr: { office: "circle-sourbazar" } }
