@@ -3,40 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="bk_page_title">Bhumi Karmchari Allocation Portal</title>
-  <meta name="description" content="Bhumi Karmchari (Revenue Employee) Allocation Portal — Saharsa District, Government of Bihar." />
+  <title data-i18n="page_title">Executive Assistant Allocation Portal</title>
+  <meta name="description" content="Executive Assistant Allocation Portal — Saharsa District, Government of Bihar." />
   <link rel="icon" href="assets/bihar-emblem.png" />
-  <link rel="stylesheet" href="css/style.css" />
-  <!-- Page-specific styles kept here so the shared css/style.css is untouched. -->
-  <style>
-    .util-link {
-      text-decoration: none; color: var(--navy); font-size: 0.9rem; font-weight: 600;
-      padding: 5px 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .util-link::before { content: "→"; font-size: 1rem; line-height: 1; }
-    .util-link:hover { background: var(--bg); }
-
-    .add-form-bk { grid-template-columns: 1.5fr 1.7fr auto; }
-    @media (max-width: 620px) { .add-form-bk { grid-template-columns: 1fr; } }
-
-    .cap-title { font-weight: 700; color: var(--navy-dark); margin-bottom: 10px; font-size: 0.95rem; }
-    .cap-list { display: flex; flex-wrap: wrap; gap: 8px; }
-    .cap-chip {
-      background: #eef3f8; border: 1px solid var(--border); border-radius: 20px;
-      padding: 4px 12px; font-size: 0.85rem; color: var(--text);
-    }
-    .cap-chip b { color: var(--navy); margin-left: 2px; }
-
-    .unplaced-box { margin-top: 14px; }
-    .unplaced-title { font-weight: 700; color: var(--warn); margin-bottom: 8px; font-size: 0.9rem; }
-    .unplaced-list { display: flex; flex-wrap: wrap; gap: 8px; }
-    .unplaced-list span {
-      background: var(--warn-bg); border: 1px solid #e8d68a; border-radius: 6px;
-      padding: 4px 10px; font-size: 0.85rem; color: var(--text);
-    }
-    .unplaced-list em { color: var(--muted); font-style: normal; }
-    @media print { .unplaced-box, .util-link { display: none !important; } }
-  </style>
+  <link rel="stylesheet" href="css/bhumi.css" />
 </head>
 <body data-lang="en">
   <!-- ===================== PRINT-ONLY OFFICIAL HEADER ===================== -->
@@ -49,11 +19,12 @@
   <!-- ===================== SAFFRON LANDING HEADER ===================== -->
   <section class="landing-header">
     <div class="landing-header-inner">
-      <a href="bhumi-karmchari.html" class="banner-brand" aria-label="Home">
+      <a href="index.html" class="banner-brand" aria-label="Home">
         <img class="landing-header-emblem" src="assets/bihar-emblem.png" alt="Government of Bihar / बिहार सरकार" />
         <div class="landing-titles">
-          <h1 data-i18n="bk_app_title">Bhumi Karmchari Allocation Portal</h1>
+          <h1 data-i18n="app_title">Executive Assistant Allocation Portal</h1>
           <p data-i18n="app_subtitle">Saharsa District, Government of Bihar</p>
+          <p class="scheme-line" data-i18n="scheme">Pradhan Mantri Awaas Yojana – Gramin</p>
         </div>
       </a>
 
@@ -69,7 +40,7 @@
     </div>
   </section>
 
-  <!-- ===================== UTILITY BAR (NAV + LANGUAGE) ===================== -->
+  <!-- ===================== UTILITY BAR (LANGUAGE) ===================== -->
   <div class="util-bar">
     <div class="util-bar-inner">
       <div class="util-bar-spacer"></div>
@@ -87,45 +58,47 @@
         <img src="assets/saharsa-administration.jpeg" alt="Saharsa Administration" onerror="this.style.display='none'" />
       </div>
       <div class="hero-text">
-        <h2 data-i18n="bk_hero_title">Revenue Employee (Bhumi Karmchari) Transfer &amp; Circle Allocation</h2>
-        <p data-i18n="bk_hero_lead">Add revenue employees with their current circle, then allocate each a new circle — never their current one — within each circle's capacity.</p>
+        <h2 data-i18n="hero_title">Executive Assistant Transfer &amp; Block Allocation</h2>
+        <p data-i18n="hero_lead">Add executive assistants with their current, previous and home block, then allocate each a new block — never one of those three.</p>
       </div>
     </section>
 
-    <!-- ===================== CAPACITIES ===================== -->
-    <section class="card no-print" id="capBox"></section>
-
-    <!-- ===================== ADD EMPLOYEE ===================== -->
+    <!-- ===================== ADD EXECUTIVE ===================== -->
     <section class="card no-print">
-      <h2 class="card-title" data-i18n="bk_add_title">Add Revenue Employee</h2>
-      <form id="addForm" class="add-form add-form-bk" autocomplete="off">
+      <h2 class="card-title" data-i18n="add_title">Add Executive</h2>
+      <form id="addForm" class="add-form" autocomplete="off">
         <div class="field">
-          <label for="empName" data-i18n="bk_f_name">Employee Name</label>
-          <input type="text" id="empName" data-i18n-placeholder="f_name_ph" placeholder="e.g. Ramesh Kumar" required />
+          <label for="execName" data-i18n="f_name">Executive Name</label>
+          <input type="text" id="execName" data-i18n-placeholder="f_name_ph" placeholder="e.g. Ramesh Kumar" required />
         </div>
         <div class="field">
-          <label for="currentBlock" data-i18n="bk_f_current">Current Circle (Anchal)</label>
+          <label for="previousBlock" data-i18n="f_previous">Previous Office</label>
+          <select id="previousBlock"></select>
+        </div>
+        <div class="field">
+          <label for="currentBlock" data-i18n="f_current">Current Office</label>
           <select id="currentBlock" required></select>
         </div>
         <div class="field field-action">
           <button type="submit" class="btn btn-primary" data-i18n="btn_add">+ Add</button>
         </div>
       </form>
-      <p class="hint" data-i18n="bk_add_hint">An allocated circle is never the employee's current circle, and each circle is filled only up to its capacity.</p>
+      <p class="hint" data-i18n="add_hint">An allocated block will never be the executive's Current, Previous, or Home block.</p>
     </section>
 
     <!-- ===================== ROSTER + RESULTS ===================== -->
     <section class="card" id="rosterCard">
       <div class="card-header">
-        <h2 class="card-title"><span data-i18n="bk_roster_title">Revenue Employee Roster</span> <span class="count-badge" id="countBadge">0</span></h2>
+        <h2 class="card-title"><span data-i18n="roster_title">Executive Roster</span> <span class="count-badge" id="countBadge">0</span></h2>
         <div class="toolbar no-print">
-          <button type="button" class="btn btn-accent" id="allocateBtn" data-i18n="bk_btn_allocate">⚙ Allocate Circles</button>
+          <button type="button" class="btn btn-accent" id="allocateBtn" data-i18n="btn_allocate">⚙ Allocate Blocks</button>
           <button type="button" class="btn btn-ghost" id="printBtn" data-i18n="btn_print">🖨 Print / Export PDF</button>
           <button type="button" class="btn btn-ghost" id="loadSeedBtn" data-i18n="btn_load">↻ Load Saharsa Sheet</button>
           <button type="button" class="btn btn-ghost btn-danger" id="clearBtn" data-i18n="btn_clear">Clear All</button>
         </div>
       </div>
 
+      <!-- Print-only header block -->
       <div class="print-meta" id="printMeta"></div>
 
       <div class="table-wrap">
@@ -133,31 +106,31 @@
           <thead>
             <tr>
               <th class="col-num" data-i18n="th_num">#</th>
-              <th data-i18n="bk_th_name">Employee Name</th>
-              <th data-i18n="bk_th_current">Current Circle</th>
-              <th class="col-alloc"><span data-i18n="bk_th_alloc">Allocated Circle</span><br /><span class="th-sub" data-i18n="bk_th_alloc_hi">नवपदस्थापित अंचल</span></th>
+              <th data-i18n="th_name">Executive Name</th>
+              <th data-i18n="th_previous">Previous Office</th>
+              <th data-i18n="th_current">Current Office</th>
+              <th class="col-alloc"><span data-i18n="th_alloc">Allocated Office</span><br /><span class="th-sub" data-i18n="th_alloc_hi">नवपदस्थापित कार्यालय</span></th>
               <th class="col-action no-print" data-i18n="th_action">Action</th>
             </tr>
           </thead>
           <tbody id="execTableBody"></tbody>
         </table>
-        <div class="empty-state" id="emptyState" data-i18n="bk_empty_state">No employees added yet. Use the form above to add one.</div>
+        <div class="empty-state" id="emptyState" data-i18n="empty_state">No executives added yet. Use the form above to add one.</div>
       </div>
 
       <p class="alloc-note no-print" id="allocNote"></p>
-      <div class="unplaced-box no-print" id="unplacedBox"></div>
     </section>
   </main>
 
   <footer class="site-footer no-print">
     <div class="footer-inner">
-      <div>© Government of Bihar — Bhumi Karmchari Allocation Portal.</div>
+      <div data-i18n="footer_note">© Government of Bihar — Executive Assistant Allocation Portal.</div>
       <div class="inline-note">© <span id="footer-year"></span> · Government of Bihar</div>
     </div>
   </footer>
 
   <script src="js/bhumi.js"></script>
-  <script src="js/i18n.js"></script>
+  <script src="js/bhumi-i18n.js"></script>
   <script src="js/bhumi-app.js"></script>
 </body>
 </html>
