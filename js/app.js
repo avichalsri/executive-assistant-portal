@@ -126,18 +126,8 @@
       load[b] = 0;
     });
 
-    function eligibleCount(x) {
-      var c = 0;
-      BLOCKS.forEach(function (b) {
-        if (!forbidden[x.id][b]) c++;
-      });
-      return c;
-    }
-
-    // Most-constrained executive first.
-    var order = executives.slice().sort(function (a, b) {
-      return eligibleCount(a) - eligibleCount(b);
-    });
+    // Randomise executive order so each run yields a different valid assignment.
+    var order = shuffle(executives.slice());
 
     var unassigned = [];
 
@@ -149,7 +139,7 @@
         unassigned.push(x);
         return;
       }
-      var choice = pickBalanced(candidates, order, forbidden, load);
+      var choice = pickBalanced(candidates, load);
       x.allocated = choice;
       load[choice]++;
     });
@@ -171,25 +161,13 @@
     }
   }
 
-  // Pick the eligible block with the lightest load (even spread); break ties
-  // toward the block needed by the fewest still-unassigned executives.
-  function pickBalanced(candidates, order, forbidden, load) {
-    var best = null;
-    var bestLoad = Infinity;
-    var bestDemand = Infinity;
-    candidates.forEach(function (b) {
-      var l = load[b];
-      var demand = 0;
-      order.forEach(function (x) {
-        if (x.allocated == null && !forbidden[x.id][b]) demand++;
-      });
-      if (l < bestLoad || (l === bestLoad && demand < bestDemand)) {
-        bestLoad = l;
-        bestDemand = demand;
-        best = b;
-      }
-    });
-    return best;
+  // Among eligible candidates, pick randomly from those with the lightest load,
+  // so allocations stay evenly spread but vary on each run.
+  function pickBalanced(candidates, load) {
+    var minLoad = Infinity;
+    candidates.forEach(function (b) { if (load[b] < minLoad) minLoad = load[b]; });
+    var lightest = candidates.filter(function (b) { return load[b] === minLoad; });
+    return lightest[Math.floor(Math.random() * lightest.length)];
   }
 
   allocateBtn.addEventListener("click", allocate);
@@ -263,6 +241,14 @@
   });
 
   /* ----------------------------- Utils ----------------------------- */
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, "&amp;")
